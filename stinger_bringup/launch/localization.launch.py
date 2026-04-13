@@ -33,7 +33,9 @@ def generate_launch_description():
             # TODO: 4.4.b Navsat Node
             # Example: (topic, remaped_topic)
             ### STUDENT CODE HERE
-
+            # intercept requests and redirect it to the actual topic 
+            ('/imu', '/stinger/imu/data'),
+            ('/gps/fix', 'stinger/gps/fix')
             ### END STUDENT CODE
             ],
         ),
