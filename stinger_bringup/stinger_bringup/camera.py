@@ -30,7 +30,7 @@ class CameraPublisher(Node):
         # Initialize OpenCV capture for the USB camera (0 is the default device ID)
         self.image_pub = self.create_publisher(Image, '/stinger/camera_0/image_raw', 10) # queue size 10
         self.timer = self.create_timer(0.033, self.publish_image)  # Publish at 30 Hz
-        self.cap = cv2.VideoCapture("/dev/video5") # TODO: change this by locating the camera using cmd "ls /dev/video*"
+        self.cap = cv2.VideoCapture("/dev/video0") # TODO: change this by locating the camera using cmd "ls /dev/video*"
         self.cap.set(cv2.CAP_PROP_FRAME_WIDTH, 1280)
         self.cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 720)
         self.cap.set(cv2.CAP_PROP_FPS, 60) # frames per second is 60
@@ -43,12 +43,23 @@ class CameraPublisher(Node):
     def publish_image(self):
         ret, frame = self.cap.read() # capture a frame from the usb cam
         if ret: # is captured successfully
+            # Convert OpenCV image to ROS Image message
+            msg = self.br.cv2_to_imgmsg(frame, 'bgr8')
+            
+            # --- ADD THESE LINES ---
+            # 1. Give the message a timestamp (required for Foxglove)
+            msg.header.stamp = self.get_clock().now().to_msg()
+            
+            # 2. Give the message a frame_id (required for RViz/Foxglove)
+            msg.header.frame_id = 'camera_link'
+            # -----------------------
+
             # Publish the image frame
-            self.image_pub.publish(self.br.cv2_to_imgmsg(frame, 'bgr8'))
+            self.image_pub.publish(msg)
             self.get_logger().info("Publishing image frame...")
         else:
             self.get_logger().error("Failed to capture image.")
-
+            
     def destroy_node(self):
         self.cap.release()
         super().destroy_node()
