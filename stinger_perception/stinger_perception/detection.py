@@ -34,11 +34,11 @@ class Detection(Node):
 
         # TODO: 6.1.a Understanding HSV
         # True or False, as my Value approaches 0, the color becomes darker.
-        self.question_1 = None
+        self.question_1 = True
         # True or False, as my Saturation increases, the color becomes whiter.
-        self.question_2 = None
+        self.question_2 = False
         # [0, 255), what hue value might cyan be.
-        self.question_3 = None
+        self.question_3 = 127
         ### STUDENT CODE HERE
 
         ### END STUDENT CODE
@@ -67,7 +67,23 @@ class Detection(Node):
 
         # TODO: 6.1.b Masking 
         ### STUDENT CODE HERE
+        
+        # Bounds for Green [Hue, Saturation, Value]
+        # 100s are starting guesses
+        green_lower = np.array([40, 100, 100])
+        green_upper = np.array([80, 255, 255])
 
+        # Bounds for Red (Hue 0-10 and 170-179)
+        red_lower_1 = np.array([0, 100, 100])
+        red_upper_1 = np.array([10, 255, 255])
+        red_lower_2 = np.array([170, 100, 100])
+        red_upper_2 = np.array([179, 255, 255])
+
+        green_mask = cv2.inRange(self.hsv, green_lower, green_upper)
+        red_mask_1 = cv2.inRange(self.hsv, red_lower_1, red_upper_1)
+        red_mask_2 = cv2.inRange(self.hsv, red_lower_2, red_upper_2)
+
+        red_mask = cv2.bitwise_or(red_mask_1, red_mask_2)
         ### END STUDENT CODE
         
         cv2.imshow("Red_mask", red_mask)
@@ -99,7 +115,7 @@ class Detection(Node):
 
         # TODO: 6.1.c Contours
         ### STUDENT CODE HERE
-
+        contours, hierarchy = cv2.findContours(mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
         ### END STUDENT CODE
         detected = []
 
@@ -108,7 +124,8 @@ class Detection(Node):
             (x, y), radius = cv2.minEnclosingCircle(cnt)
             cv2.circle(self.frame, (int(x), int(y)), int(radius), (255, 0, 0), 3)
             ### STUDENT CODE HERE
-
+            if radius > 10:
+                detected.append([x, y, radius])
             ### END STUDENT CODE
         cv2.imshow("original_frame", self.frame)
         detected_sorted = sorted(detected, key=lambda x: x[2], reverse=True)
