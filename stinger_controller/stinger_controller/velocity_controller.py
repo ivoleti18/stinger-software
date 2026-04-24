@@ -17,7 +17,7 @@ class VelocityController(Node):
             self.cmd_vel_callback,
             10
         )
-        self.filtered_odom_sub = self.create_subscription(
+        self.odom_sub = self.create_subscription(
             Odometry,
             '/odometry/filtered',
             self.odometry_callback,
