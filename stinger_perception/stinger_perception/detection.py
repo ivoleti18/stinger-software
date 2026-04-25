@@ -70,20 +70,24 @@ class Detection(Node):
         
         # Bounds for Green [Hue, Saturation, Value]
         # 100s are starting guesses
-        green_lower = np.array([40, 100, 100])
-        green_upper = np.array([80, 255, 255])
+        self.green_lower = np.array([40, 100, 100])
+        self.green_upper = np.array([80, 255, 255])
 
         # Bounds for Red (Hue 0-10 and 170-179)
-        red_lower_1 = np.array([0, 100, 100])
-        red_upper_1 = np.array([10, 255, 255])
-        red_lower_2 = np.array([170, 100, 100])
-        red_upper_2 = np.array([179, 255, 255])
+        self.red_lower = np.array([0, 100, 100];)
+        self.red_upper = np.array([10, 255, 255];)
+        # red_lower_1 = np.array([0, 100, 100])
+        # red_upper_1 = np.array([10, 255, 255])
+        # red_lower_2 = np.array([170, 100, 100])
+        # red_upper_2 = np.array([179, 255, 255])
 
-        green_mask = cv2.inRange(self.hsv, green_lower, green_upper)
-        red_mask_1 = cv2.inRange(self.hsv, red_lower_1, red_upper_1)
-        red_mask_2 = cv2.inRange(self.hsv, red_lower_2, red_upper_2)
+        green_mask = cv2.inRange(self.hsv, self.green_lower, self.green_upper)
+        red_mask = cv2.inRange(self.hsv, self.red_lower, self.red_upper)
 
-        red_mask = cv2.bitwise_or(red_mask_1, red_mask_2)
+        # red_mask_1 = cv2.inRange(self.hsv, red_lower_1, red_upper_1)
+        # red_mask_2 = cv2.inRange(self.hsv, red_lower_2, red_upper_2)
+
+        # red_mask = cv2.bitwise_or(red_mask_1, red_mask_2)
         ### END STUDENT CODE
         
         cv2.imshow("Red_mask", red_mask)
